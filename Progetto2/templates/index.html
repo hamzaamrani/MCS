@@ -1,18 +1,120 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>DCT Compression</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Logo recognition demo">
+
+    <title>DCT2 Compression Demo</title>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+
+    <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height:1.5em;
+      color: #232323;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 {
+      font-family: Times, serif;
+      line-height:1.5em;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .page-header {
+      border-bottom: 0px;
+    }
+
+    </style>
+    <link type="text/css" rel="stylesheet" href= "static/styles/component.css" />
+
   </head>
+
   <body>
-    <h1>DCT Compression</h1>
-    <p> Flask is Fun </p>
-    <form method="post" action="/">
-            <div>
-                <input type="submit" value="Encrypt" name="Encrypt"/>
-                <input type="submit" value="Decrypt" name="Decrypt" />
+    <!-- Begin page content -->
+    <div class="container">
+      <div class="page-header">
+        <h1><a href="http://0.0.0.0:5000">DCT2 Compression Demo</a></h1>
+        <p> This is a demonstration showing the DCT2 Compression. </p>
+      </div>
+      {% if has_result %}
+        {% if not result[0] %}
+          <!-- we have error in the result. -->
+          <div class="alert alert-danger">{{ result[1] }} </div>
+        {% else %}
+        <div class="media">
+          <div class="pull-left">
+            <div class="img-didascalia">
+              <label>Original image ({{ result[4] }} x {{ result[5] }})</label>
+              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ imagesrc }}>
+              <br>
+              <br>
+              <table>
+                <tr>
+                  <td><label>Original image size: </label></td>
+                  <td>{{ result[6] }} KB</td>
+                </tr>
+                <tr>
+                  <td><label>Compressed image size: </label></td>
+                  <td>{{ result[7] }} KB</td>
+                </tr>
+                <tr>
+                  <td><label>Percentage of compression: </label></td>
+                  <td> {{ result[8] }} %</td>
+                </tr>
+              </table>
 
             </div>
-    </form>
-  </body>
+
+          </div>
+
+
+          <div class="pull-right">
+            <div class="img-didascalia">
+              <label>Compression with F={{ result[2] }} and d={{ result[3] }}</label>
+              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ imagesrccompressed }}>
+            </div>
+            <br>
+            <br>
+            <div class="img-didascalia">
+              <label>Error image</label>
+              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ difference }}>
+            </div>
+          </div>
+        </div>
+
+        {% endif %}
+      <hr>
+      {% endif %}
+
+      <form id="imageupload" class="form-inline" role="form" action="compress" method="post"  enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="imagefile">Upload an image:</label>
+            <input type="file" name="imagefile" id="imagefile" accept="image/*">
+
+          <input type="hidden" name="imagefilepath" id="imagefilepath" >
+          <label>Window size for DCT2 (F parameter): </label>
+            <input type="text" name="F"><br>
+          <label>Frequency threshold (d parameter): </label>
+            <input type="text" name="d"><br><br>
+          <button type="submit">Compress</button>
+        </div>
+      </form>
+
+
+    </div>
+
+    <hr>
+    <div id="footer">
+      <div class="container">
+        <p>Metodi del calcolo scientifico 2019 - Amrani Hamza 807386</p>
+      </div>
+   </div>
+ </body>
 </html>

@@ -5,6 +5,10 @@ from PIL import ImageChops
 from scipy.fftpack import dct
 from scipy.fftpack import idct
 from flask import Flask, render_template, request
+import io
+import base64
+from io import BytesIO
+import sys
 
 app = Flask(__name__)
 
@@ -58,26 +62,62 @@ def compressionDCT(img, F, d):
 
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 def index():
-    print(request.method)
-    if request.method == 'POST':
-        if request.form.get('Encrypt') == 'Encrypt':
-            # pass
-            print("Encrypted")
-        elif  request.form.get('Decrypt') == 'Decrypt':
-            # pass # do something else
-            print("Decrypted")
-        else:
-            # pass # unknown
-            return render_template("index.html")
-    elif request.method == 'GET':
-        # return render_template("index.html")
-        print("No Post Back Call")
     return render_template("index.html")
 
+@app.route('/compress', methods=['POST'])
+def classify_upload():
+    try:
+        print("Uploaded image.")
+        imagefile = request.files['imagefile']
+        img = Image.open(imagefile).convert('L')
+        #img.show()
+
+        F = int( request.form.get('F') )
+        d = int( request.form.get('d') )
+
+        if (d<0 or d>(2*F-2)):
+            print("Error on d.")
+            return render_template(
+                'index.html', has_result=True,
+                result=(False, 'Error on d: 0 < d < 2F-2.')
+            )
+
+        compressed = compressionDCT(img, F, d)
+        diff = ImageChops.difference(img, compressed)
+    except Exception as err:
+        print("Cannot open uploaded image.")
+        return render_template(
+            'index.html', has_result=True,
+            result=(False, 'Cannot open uploaded image or incorrect parameters')
+        )
+
+    w, h = img.size
+
+    img_file = BytesIO()
+    img.save(img_file, 'png')
+    sO = round( int(img_file.tell()) / 1024, 2)
+
+    img_file = BytesIO()
+    compressed.save(img_file, 'png')
+    sC = round( int( img_file.tell()) /1024, 2)
+    p = round( sC/sO, 2)
+    return render_template(
+        'index.html', has_result=True,
+        result=(True, 'Image uploaded. Correct parameters.', F, d, w, h, sO, sC, p),
+        imagesrc = embed_image_html(img),
+        imagesrccompressed = embed_image_html( compressed ),
+        difference = embed_image_html( diff )
+    )
+
+def embed_image_html(image):
+    """Creates an image embedded in HTML base64 format."""
+    string_buf = io.BytesIO()
+    image.save(string_buf, format='bmp')
+    data = base64.b64encode( string_buf.getvalue())
+    data = str(data).replace('\n', '').replace('\'', '')
+    return 'data:image/bmp;base64,' + data[1:]
 
 if __name__ == "__main__":
     app.run(debug=True)
-    #img = Image.open('images/big_tree.bmp').convert('L')
-    #compress = compressionDCT(img, 10, 7)

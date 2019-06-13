@@ -1,0 +1,44 @@
+#ratings {
+    position: absolute;
+}
+#gtRating {
+    margin: 0px auto;
+    margin-top: 10px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+#predRating {
+    display: table;
+    overflow: hidden;
+    padding: 0px;
+    visibility: visible;
+}
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+
+.rating > span {
+    float:left;
+    width:1em;
+    padding:0 .1em;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:150%;
+    line-height:1.2;
+}
+
+.rating > span:before {
+    content: '★ ';
+}
+
+.rating > span.bad {
+    color: #ddd;
+    text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.rating > span.good {
+    color: gold;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
