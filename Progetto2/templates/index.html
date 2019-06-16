@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Logo recognition demo">
 
     <title>DCT2 Compression Demo</title>
 
@@ -52,21 +51,21 @@
           <div class="pull-left">
             <div class="img-didascalia">
               <label>Original image ({{ result[4] }} x {{ result[5] }})</label>
-              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ imagesrc }}>
+              <img style="object-fit:cover;" class="media-object" width="70%" class="responsive" src={{ imagesrc }}>
               <br>
               <br>
               <table>
                 <tr>
                   <td><label>Original image size: </label></td>
-                  <td>{{ result[6] }} KB</td>
+                  <td>{{ result[8] }} KB</td>
                 </tr>
                 <tr>
                   <td><label>Compressed image size: </label></td>
-                  <td>{{ result[7] }} KB</td>
+                  <td>{{ result[9] }} KB</td>
                 </tr>
                 <tr>
                   <td><label>Percentage of compression: </label></td>
-                  <td> {{ result[8] }} %</td>
+                  <td> {{ result[10] }} %</td>
                 </tr>
               </table>
 
@@ -77,14 +76,8 @@
 
           <div class="pull-right">
             <div class="img-didascalia">
-              <label>Compression with F={{ result[2] }} and d={{ result[3] }}</label>
-              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ imagesrccompressed }}>
-            </div>
-            <br>
-            <br>
-            <div class="img-didascalia">
-              <label>Error image</label>
-              <img style="object-fit:cover;" class="media-object" width="350" class="responsive" src={{ difference }}>
+              <label>Compression ({{ result[6] }} x {{ result[7] }}) with F={{ result[2] }} and d={{ result[3] }}</label>
+              <img style="object-fit:cover;" class="media-object" width="70%" class="responsive" src={{ imagesrccompressed }}>
             </div>
           </div>
         </div>

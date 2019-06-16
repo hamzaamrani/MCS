@@ -14,12 +14,14 @@ app = Flask(__name__)
 
 def compressionDCT(img, F, d):
     im = np.array(img)
-    compressed = im
+
     N = im.shape[0]
     M = im.shape[1]
 
     NF = int((N/F)//1)
     MF = int((M/F)//1)
+    compressed = np.zeros((NF*F,MF*F))
+
     f = NF * MF
     #suddividere l'immagine in blocchi quadrati f di pixel di dimensioni F F
     blocks = {}
@@ -56,9 +58,8 @@ def compressionDCT(img, F, d):
         for j in range(MF):
             compressed[i*F:i*F+F, j*F:j*F+F] = blocks[k]
             k = k + 1
-
     imm = Image.fromarray(im)
-    return Image.fromarray(compressed)
+    return Image.fromarray(compressed).convert("L")
 
 
 
@@ -83,9 +84,7 @@ def classify_upload():
                 'index.html', has_result=True,
                 result=(False, 'Error on d: 0 < d < 2F-2.')
             )
-
         compressed = compressionDCT(img, F, d)
-        diff = ImageChops.difference(img, compressed)
     except Exception as err:
         print("Cannot open uploaded image.")
         return render_template(
@@ -94,6 +93,7 @@ def classify_upload():
         )
 
     w, h = img.size
+    wc, hc = compressed.size
 
     img_file = BytesIO()
     img.save(img_file, 'png')
@@ -102,13 +102,13 @@ def classify_upload():
     img_file = BytesIO()
     compressed.save(img_file, 'png')
     sC = round( int( img_file.tell()) /1024, 2)
+
     p = round( sC/sO, 2)
     return render_template(
         'index.html', has_result=True,
-        result=(True, 'Image uploaded. Correct parameters.', F, d, w, h, sO, sC, p),
+        result=(True, 'Image uploaded. Correct parameters.', F, d, w, h, wc, hc, sO, sC, p),
         imagesrc = embed_image_html(img),
-        imagesrccompressed = embed_image_html( compressed ),
-        difference = embed_image_html( diff )
+        imagesrccompressed = embed_image_html( compressed )
     )
 
 def embed_image_html(image):

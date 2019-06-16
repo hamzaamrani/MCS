@@ -2,6 +2,7 @@ import numpy as np
 import math
 import random
 from scipy.fftpack import dct
+from scipy.fftpack import dctn
 from scipy.fftpack import idct
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -68,6 +69,20 @@ def mydct2(F):
 
     return Y
 
+def mydct2_2(F):
+    N = F.shape[0]
+    M = F.shape[1]
+
+    F = F.T
+    for i in range(M):
+        F[i,:] = mydct(F[i,:])
+
+    F = F.T
+    for i in range(N):
+        F[i,:] = mydct(F[i,:])
+
+    return F
+
 def myidct2(F):
     N = F.shape[0]
     M = F.shape[1]
@@ -91,11 +106,25 @@ def myidct2(F):
             Y[i,j] = sum
     return Y
 
+def myidct2_2(F):
+    N = F.shape[0]
+    M = F.shape[1]
+
+    F = F.T
+    for i in range(M):
+        F[i,:] = myidct(F[i,:])
+
+    F = F.T
+    for i in range(N):
+        F[i,:] = myidct(F[i,:])
+
+    return F
+
 def generatorM (N):
     X = np.zeros((N,N))
     for i in range(N):
         for j in range(N):
-            X[i,j] = random.randrange(0, 255)
+            X[i,j] = random.randrange(0, 255).real
 
     return X
 
@@ -141,8 +170,14 @@ if __name__ == "__main__":
     Z = mydct2(X)
     print("\nmydct2(X):\n",Z)
 
+    Z = mydct2_2(X)
+    print("\nmydct2_2(X):\n",Z)
+
     W = myidct2(Z)
     print("\nmyidct2(Z):\n",W)
+
+    W = myidct2_2(Z)
+    print("\nmyidct2_2(Z):\n",W)
 
     print("\n************************************\n")
 
@@ -154,29 +189,26 @@ if __name__ == "__main__":
         #print("\nMatrix ",n,"x",n)
 
         begin = datetime.now()
-        Y = dct(dct(X.T, norm='ortho').T, norm='ortho')
+        Y = dctn(X, norm='ortho') #type=2
+        #Y = dct(dct(X.T, norm='ortho').T, norm='ortho')
         end = datetime.now() - begin
         #print("DCT2 - Execution time: " + str(end)[6:] + " s")
         T1[n-1] = float(str(end)[6:]) * 1000
-        #print(str(T1[n-1]))
 
         begin = datetime.now()
         Z = mydct2(X)
         end = datetime.now() - begin
         #print("MYDCT2 - Execution time: " + str(end)[6:] + " s")
         T2[n-1] = float(str(end)[6:]) * 1000
+
     print("\nMatrix DIM 1-",N)
     print(T1)
     print(T2)
 
-    print(max(T1))
-    print(max(T2))
 
-
-
-    plt.plot(T1)
-    #plt.plot(T2)
-    plt.legend(['DCT2'], loc='lower right')
+    plt.plot(T1, marker='.', color='r')
+    plt.plot(T2, marker='.', color='b')
+    plt.legend(['DCT2 scipy', 'DCT2 mine'], loc='upper left')
 
     plt.title('DCT comparison on random matrixes')
     plt.xlabel('Matrix dimension')
